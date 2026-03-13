@@ -1,0 +1,18 @@
+.Button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    height: 44px;
+    width: 110px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 22px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.Button:hover {
+    background: #f0f0f0;
+}
