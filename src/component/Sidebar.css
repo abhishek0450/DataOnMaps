@@ -1,0 +1,29 @@
+.Sidebar-main{
+    width: clamp(240px, 28vw, 360px);
+    height: 100%;
+    background-color: white;
+    
+}
+
+.Sidebar-inner {
+    min-height: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-btn {
+    text-align: left;
+}
+
+.sidebar-btn.active {
+    background-color: #e8f1ff;
+    border-color: #7aa7e8;
+}
+
+@media (max-width: 900px) {
+    .Sidebar-main {
+        width: clamp(180px, 34vw, 260px);
+    }
+}

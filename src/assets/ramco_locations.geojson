@@ -1,0 +1,227 @@
+{
+  "type": "FeatureCollection",
+  "name": "Ramco_Cements_Spatial_Infrastructure_Network",
+  "features": [
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [80.2667, 13.0410]
+      },
+      "properties": {
+        "entity_id": "CORP-HQ-001",
+        "name": "Auras Corporate Centre",
+        "facility_type": "Corporate Headquarters",
+        "city": "Chennai",
+        "state": "Tamil Nadu",
+        "description": "Central corporate command and GIS monitoring hub."
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [77.5539, 9.4364]
+      },
+      "properties": {
+        "entity_id": "REG-HQ-001",
+        "name": "Ramamandiram Registered Office",
+        "facility_type": "Registered Office",
+        "city": "Rajapalayam",
+        "state": "Tamil Nadu",
+        "description": "Historical administrative base of the group."
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [77.957497, 9.593749]
+      },
+      "properties": {
+        "entity_id": "MFG-INT-001",
+        "name": "Ramasamy Raja Nagar Plant",
+        "facility_type": "Integrated Cement Plant",
+        "district": "Virudhunagar",
+        "state": "Tamil Nadu",
+        "capacity_mtpa": 3.0,
+        "established_year": 1961
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [79.0917, 11.1764]
+      },
+      "properties": {
+        "entity_id": "MFG-INT-002",
+        "name": "Govindapuram (Ariyalur) Plant",
+        "facility_type": "Integrated Cement Plant",
+        "district": "Ariyalur",
+        "state": "Tamil Nadu",
+        "capacity_mtpa": 5.5,
+        "established_year": 2008
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [80.0980, 16.8830]
+      },
+      "properties": {
+        "entity_id": "MFG-INT-003",
+        "name": "Jayanthipuram Plant",
+        "facility_type": "Integrated Cement Plant",
+        "district": "Krishna",
+        "state": "Andhra Pradesh",
+        "capacity_mtpa": 3.65,
+        "established_year": 1986
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [78.1400, 15.1050]
+      },
+      "properties": {
+        "entity_id": "MFG-INT-004",
+        "name": "Kalavatala Plant",
+        "facility_type": "Integrated Cement Plant",
+        "district": "Nandyal",
+        "state": "Andhra Pradesh",
+        "capacity_mtpa": 2.4,
+        "established_year": 2022
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [82.9560, 17.6160]
+      },
+      "properties": {
+        "entity_id": "MFG-GRN-001",
+        "name": "Vizag Grinding Unit",
+        "facility_type": "Grinding Unit",
+        "district": "Visakhapatnam",
+        "state": "Andhra Pradesh",
+        "capacity_mtpa": 2.0
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [86.1265, 20.7300]
+      },
+      "properties": {
+        "entity_id": "MFG-GRN-002",
+        "name": "Haridaspur Grinding Unit",
+        "facility_type": "Grinding Unit",
+        "district": "Jajpur",
+        "state": "Odisha",
+        "capacity_mtpa": 1.8
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [80.0630, 16.8547],
+            [80.0922, 16.8547],
+            [80.0922, 16.8695],
+            [80.0630, 16.8695],
+            [80.0630, 16.8547]
+          ]
+        ]
+      },
+      "properties": {
+        "entity_id": "EXT-MIN-001",
+        "name": "Budawada Limestone Mine",
+        "facility_type": "Captive Mine",
+        "district": "Krishna",
+        "state": "Andhra Pradesh",
+        "associated_plant": "Jayanthipuram Plant"
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [78.0880, 9.3794]
+      },
+      "properties": {
+        "entity_id": "EXT-MIN-002",
+        "name": "Pandalgudi Limestone Mine",
+        "facility_type": "Captive Mine",
+        "district": "Virudhunagar",
+        "state": "Tamil Nadu",
+        "associated_plant": "Ramasamy Raja Nagar Plant"
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [88.3967, 22.5411]
+      },
+      "properties": {
+        "entity_id": "LOG-OFF-001",
+        "name": "Kolkata Regional Office",
+        "facility_type": "Distribution Hub",
+        "state": "West Bengal"
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [77.5806, 13.0068]
+      },
+      "properties": {
+        "entity_id": "LOG-OFF-002",
+        "name": "Bengaluru Regional Office",
+        "facility_type": "Distribution Hub",
+        "state": "Karnataka"
+      }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [
+          [85.8245, 20.2960],
+          [76.3028, 9.9931],
+          [78.1198, 9.9252],
+          [76.9366, 11.0168],
+          [78.4744, 17.3753]
+        ]
+      },
+      "properties": {
+        "entity_id": "DIST-NET-001",
+        "name": "Dealer Network Nodes",
+        "facility_type": "Customer Cluster",
+        "distribution_scale": "10000+ dealers"
+      }
+    }
+
+  ]
+}

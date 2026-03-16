@@ -1,9 +1,10 @@
 import "./Navbar.css"
 
-const Navbar = ({ lat, long }) => {
+const Navbar = ({ lat, long, place }) => {
   return (
     <div className="Navbar">
-      LOCATION: {lat}, {long}
+      LOCATION: {lat||"Unknown"}, {long||"Unknown"} <br /> 
+      Place: {place || "Fetching location..."}
     </div>
   )
 }

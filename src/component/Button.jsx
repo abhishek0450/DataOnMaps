@@ -1,8 +1,15 @@
 import './Button.css'
 
-const Button = ({ onClick }) => {
+const Button = ({ children, onClick, className = '', type = 'button', ...props }) => {
   return (
-    <button className="Button" onClick={onClick}> @Refresh</button>
+    <button 
+      type={type} 
+      className={`Button ${className}`} 
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
   )
 }
 
