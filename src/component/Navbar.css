@@ -1,8 +1,140 @@
 .Navbar {
-    background-color: rgb(255, 255, 255);
-    height: 70px;
     width: 100%;
     display: flex;
     align-items: center;
-    margin-top:0%;
+    justify-content: space-between;
+    gap: 20px;
+    flex-shrink: 0;
+    padding: 18px 24px;
+    /* background: linear-gradient(180deg, rgba(249, 251, 253, 0.94) 0%, rgba(240, 245, 249, 0.94) 100%); */
+    background: linear-gradient(180deg, rgba(222, 225, 228, 0.94) 0%, rgba(217, 233, 247, 0.94) 100%);
+    border-bottom: 1px solid rgba(120, 145, 170, 0.18);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(16, 32, 51, 0.08);
+    
+}
+
+.nav-primary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.nav-brand {
+    min-width: 0;
+}
+
+.nav-brand h1 {
+    margin: 2px 0 0;
+    font-size: 1.1rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--text-strong);
+}
+
+.nav-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.menu-btn {
+    height: 46px;
+    width: 46px;
+    border: 1px solid rgba(120, 145, 170, 0.24);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--text-strong);
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(220, 235, 248, 0.85);
+    border-color: rgba(31, 93, 143, 0.26);
+}
+
+.nav-status {
+    display: grid;
+    grid-template-columns: minmax(0, 180px) minmax(260px, 1fr);
+    gap: 12px;
+    min-width: min(48%, 540px);
+}
+
+.status-block {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(120, 145, 170, 0.18);
+}
+
+.status-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.status-value {
+    font-size: 0.92rem;
+    line-height: 1.4;
+    color: var(--text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 960px) {
+    .Navbar {
+        padding: 14px 16px;
+        gap: 14px;
+    }
+
+    .nav-status {
+        grid-template-columns: 1fr;
+        min-width: min(52%, 400px);
+    }
+}
+
+@media (max-width: 700px) {
+    .Navbar {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 14px 14px 12px;
+    }
+
+    .nav-primary {
+        gap: 12px;
+    }
+
+    .nav-brand h1 {
+        font-size: 1rem;
+    }
+
+    .nav-status {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .status-block {
+        padding: 10px 12px;
+        border-radius: 14px;
+    }
+
+    .status-value {
+        white-space: normal;
+    }
 }

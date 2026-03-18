@@ -1,10 +1,18 @@
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 import './index.css'
 import { useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents, useMap } from 'react-leaflet'
 import Navbar from './component/Navbar'
 import Button from './component/Button'
 import Sidebar from './component/Sidebar'
-import ramcoLocationsText from './assets/ramco_locations.geojson?raw'
+import InfoCard from './component/InfoCard'
+// import ramcoLocationsText from './assets/ramco_locations.geojson?raw'
+// import ramcoLocationsText from './assets/combined_network.geojson?raw' 
+import ramcoLocationsText from './assets/ramco_with_global_customers.geojson?raw' 
 import { FaLocationCrosshairs } from "react-icons/fa6";
 
 const ramcoLocations = JSON.parse(ramcoLocationsText)
@@ -15,6 +23,7 @@ async function getPlaceName(lat, lon) {
       { headers: { 'User-Agent': 'react-leaflet-app' }})
     const data = await res.json()
     return data.display_name
+    
   } catch {
     return 'Unable to fetch location name'
   }
@@ -30,7 +39,7 @@ function isMine(feature) {
 
 function isCustomer(feature) {
   const type = feature.properties.facility_type
-  return type === 'Customer Cluster' || type === 'Distribution Hub'
+  return type === 'Customer Cluster' || type === 'Distribution Hub' ||type === 'Customer'
 }
 
 function getPositions(feature) {
@@ -92,6 +101,8 @@ function App() {
   const [selectedType, setSelectedType] = useState(null)  
   const [showMyLocation, setShowMyLocation] = useState(false)
   const [flyTarget, setFlyTarget] = useState(null)
+  const [selectedFeature, setSelectedFeature] = useState(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   async function handleMyLocationClick() {
     if (showMyLocation) {
@@ -130,6 +141,10 @@ function App() {
     setSelectedType(prev => prev === type ? null : type)
   }
 
+  function handleSidebarToggle() {
+    setIsSidebarOpen(prev => !prev)
+  }
+
   const visibleLocations = selectedType
     ? ramcoLocations.features.filter((feature) => {
         if (selectedType === 'plant') return isPlant(feature)
@@ -141,35 +156,37 @@ function App() {
 
   return (
     <div className='main-container'>
-      <Navbar lat={location?.[0]} long={location?.[1]} place={place} />
+      <Navbar lat={location?.[0]} long={location?.[1]} place={place} onMenuClick={handleSidebarToggle}/>
 
       <div className='app-content'>
-        <Sidebar activeType={selectedType} onSelectType={handleSelectType} />
+        <Sidebar activeType={selectedType} onSelectType={handleSelectType} isOpen={isSidebarOpen}/>
 
-       <MapContainer className='map-view' center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} doubleClickZoom={true} >
-          <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
-          <MapClickHandler onLocationChange={handleLocationChange} />
-          <MapFlyTo target={flyTarget} onDone={() => setFlyTarget(null)} />
+        <div className='map-stage'>
+          <MapContainer className='map-view' center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} doubleClickZoom={true} >
+            <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
+            <MapClickHandler onLocationChange={handleLocationChange} />
+            <MapFlyTo target={flyTarget} onDone={() => setFlyTarget(null)} />
 
-          {showMyLocation && location && (
-            <Marker position={location}>
-              <Popup>{place}</Popup>
-            </Marker>
-          )}
-
-          {visibleLocations.flatMap((feature) => {
-            const positions = getPositions(feature)
-            return positions.map((position, index) => (
-              <Marker key={`${feature.properties.entity_id}-${index}`} position={position}>
-                <Popup>
-                  <strong>{feature.properties.name}</strong>
-                  <br />
-                  Type: {feature.properties.facility_type}
-                </Popup>
+            {showMyLocation && location && (
+              <Marker position={location}>
+                <Popup>{place}</Popup>
               </Marker>
-            ))
-          })}
-        </MapContainer>
+            )}
+
+            {visibleLocations.flatMap((feature) => {
+              const positions = getPositions(feature)
+              return positions.map((position, index) => (
+                <Marker
+                  key={`${feature.properties.entity_id}-${index}`}
+                  position={position}
+                  eventHandlers={{ click: () => setSelectedFeature(feature.properties) }}
+                />
+              ))
+            })}
+          </MapContainer>
+
+          <InfoCard data={selectedFeature} onClose={() => setSelectedFeature(null)} />
+        </div>
       </div>
 
       

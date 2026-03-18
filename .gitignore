@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#files
+src/assets/combined_network.geojson
+src/assets/ramco_with_3000_customers.geojson
+src/assets/ramco_with_global_customers.geojson
+genrate_customers.mjs
+ramco_locations.geojson
