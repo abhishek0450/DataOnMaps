@@ -13,7 +13,12 @@ import InfoCard from './component/InfoCard'
 // import ramcoLocationsText from './assets/ramco_locations.geojson?raw'
 // import ramcoLocationsText from './assets/combined_network.geojson?raw' 
 import ramcoLocationsText from './assets/ramco_with_global_customers.geojson?raw' 
+// import ramcoLocationsText from './assets/ramco_with_3000_customers.geojson?raw'
+
 import { FaLocationCrosshairs } from "react-icons/fa6";
+import MarkerClusterGroup from 'react-leaflet-cluster'
+import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
+import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css'
 
 const ramcoLocations = JSON.parse(ramcoLocationsText)
 
@@ -172,7 +177,7 @@ function App() {
                 <Popup>{place}</Popup>
               </Marker>
             )}
-
+            <MarkerClusterGroup>
             {visibleLocations.flatMap((feature) => {
               const positions = getPositions(feature)
               return positions.map((position, index) => (
@@ -183,6 +188,7 @@ function App() {
                 />
               ))
             })}
+            </MarkerClusterGroup>
           </MapContainer>
 
           <InfoCard data={selectedFeature} onClose={() => setSelectedFeature(null)} />

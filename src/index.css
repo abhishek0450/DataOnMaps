@@ -92,7 +92,7 @@ select {
 	font-family: inherit;
 }
 
-/* .leaflet-control-zoom {
+.leaflet-control-zoom {
 	border: 0;
 	box-shadow: 0 10px 24px rgba(16, 32, 51, 0.18);
 	border-radius: 14px;
@@ -109,7 +109,7 @@ select {
 .leaflet-control-zoom a:hover {
 	background: var(--accent-soft);
 	color: var(--accent-strong);
-} */
+}
 
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
