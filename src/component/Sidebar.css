@@ -1,10 +1,11 @@
 .Sidebar-main {
     width: clamp(270px, 24vw, 320px);
+    
     min-width: 0;
     height: 100%;
     overflow: hidden;
-    /* transition: width 0.28s ease, opacity 0.28s ease; */
-    transition: width 0.28s ease;
+    transition: width 0.28s ease, opacity 0.28s ease;
+    
 }
 
 .Sidebar-main.closed {
@@ -24,6 +25,7 @@
     gap: 20px;
     border-radius: var(--radius-lg);
     background: linear-gradient(180deg, rgba(248, 250, 252, 0.94) 0%, rgba(239, 244, 248, 0.96) 100%);
+     /* background: linear-gradient(180deg, rgba(222, 225, 228, 0.94) 0%, rgba(217, 233, 247, 0.94) 100%); */
     border: 1px solid var(--panel-border);
     backdrop-filter: blur(12px);
 }

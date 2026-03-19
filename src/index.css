@@ -125,6 +125,89 @@ select {
 	line-height: 1.45;
 }
 
+.route-context-menu {
+	position: absolute;
+	z-index: 950;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 164px;
+	padding: 8px;
+	border-radius: 12px;
+	background: rgba(245, 249, 253, 0.98);
+	border: 1px solid rgba(120, 145, 170, 0.3);
+	box-shadow: 0 14px 32px rgba(16, 32, 51, 0.18);
+	transform: translate(8px, 8px);
+}
+
+.route-context-menu button {
+	padding: 8px 10px;
+	text-align: left;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--text-strong);
+	cursor: pointer;
+	transition: background 0.18s ease;
+}
+
+.route-context-menu button:hover {
+	background: var(--accent-soft);
+}
+
+.route-context-menu button.danger {
+	color: #a22828;
+}
+
+.route-status-card {
+	position: absolute;
+	left: 16px;
+	bottom: 16px;
+	z-index: 900;
+	width: fit-content;
+	max-width: min(390px, calc(100% - 32px));
+	padding: 10px 12px;
+	border-radius: 12px;
+	background: rgba(246, 250, 253, 0.94);
+	border: 1px solid rgba(120, 145, 170, 0.32);
+	box-shadow: 0 12px 28px rgba(16, 32, 51, 0.14);
+	backdrop-filter: blur(4px);
+}
+h6{
+	font-size: 0.9rem;
+	letter-spacing: 0.01em;
+	margin: 0 0 4px 0;
+}
+
+.endName, .startName{
+	text-transform: uppercase;
+	font-weight: 900;
+	color: rgb(0, 0, 0);
+}
+
+.route-status-card strong {
+	display: block;
+	font-size: 0.88rem;
+	letter-spacing: 0.01em;
+	margin-bottom: 4px;
+}
+
+.route-status-card p {
+	margin: 2px 0;
+	font-size: 0.84rem;
+	color: var(--text-body);
+	line-height: 1.45;
+}
+
+.route-status-card .hint {
+	color: var(--text-muted);
+	font-size: 0.78rem;
+}
+
+.route-status-card .error {
+	color: #a22828;
+}
+
 @media (max-width: 900px) {
 	:root {
 		--nav-height: 82px;
@@ -153,5 +236,11 @@ select {
 	.map-stage {
 		min-height: calc(100dvh - 150px);
 		border-radius: 20px;
+	}
+
+	.route-status-card {
+		left: 12px;
+		bottom: 12px;
+		max-width: calc(100% - 24px);
 	}
 }

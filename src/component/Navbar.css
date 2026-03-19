@@ -6,8 +6,8 @@
     gap: 20px;
     flex-shrink: 0;
     padding: 18px 24px;
-    /* background: linear-gradient(180deg, rgba(249, 251, 253, 0.94) 0%, rgba(240, 245, 249, 0.94) 100%); */
-    background: linear-gradient(180deg, rgba(222, 225, 228, 0.94) 0%, rgba(217, 233, 247, 0.94) 100%);
+    background: linear-gradient(180deg, rgba(249, 251, 253, 0.94) 0%, rgba(240, 245, 249, 0.94) 100%);
+    /* background: linear-gradient(180deg, rgba(222, 225, 228, 0.94) 0%, rgba(217, 233, 247, 0.94) 100%); */
     border-bottom: 1px solid rgba(120, 145, 170, 0.18);
     backdrop-filter: blur(14px);
     box-shadow: 0 10px 30px rgba(16, 32, 51, 0.08);
