@@ -8,6 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 .env
+combined_network.kml
+ramco_customers.kml
+ramco_locations.kml
+ramco_mines.kml
+ramco_plants.kml
+codebase_summary.md
 
 node_modules
 dist
@@ -31,3 +37,5 @@ src/assets/ramco_with_3000_customers.geojson
 src/assets/ramco_with_global_customers.geojson
 genrate_customers.mjs
 ramco_locations.geojson
+genrateKML 
+ramco_with_global_customers.geojson

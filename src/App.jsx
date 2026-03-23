@@ -1,79 +1,135 @@
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+// import '@fontsource/roboto/300.css';
+// import '@fontsource/roboto/400.css';
+// import '@fontsource/roboto/500.css';
+// import '@fontsource/roboto/700.css';
 
 import './index.css'
-import { useEffect, useState } from 'react'
+import L from 'leaflet'
+import 'leaflet.markercluster'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { MapContainer, Marker, Popup, Polyline, TileLayer, useMapEvents, useMap } from 'react-leaflet'
+import omnivore from '@mapbox/leaflet-omnivore'
 import Navbar from './component/Navbar'
 import Button from './component/Button'
 import Sidebar from './component/Sidebar'
 import InfoCard from './component/InfoCard'
-// import ramcoLocationsText from './assets/ramco_locations.geojson?raw'
-// import ramcoLocationsText from './assets/combined_network.geojson?raw' 
-import ramcoLocationsText from './assets/ramco_with_global_customers.geojson?raw' 
-// import ramcoLocationsText from './assets/ramco_with_3000_customers.geojson?raw'
+
+
 
 import { FaLocationCrosshairs } from "react-icons/fa6";
-import MarkerClusterGroup from 'react-leaflet-cluster'
-import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
-import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css'
-
-const ramcoLocations = JSON.parse(ramcoLocationsText)
 
 async function getPlaceName(lat, lon) {
   try {
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
-      { headers: { 'User-Agent': 'react-leaflet-app' }})
+      { headers: { 'User-Agent': 'react-leaflet-app' } })
     const data = await res.json()
     return data.display_name
-    
+
   } catch {
     return 'Unable to fetch location name'
   }
 }
-function isPlant(feature) {
-  const type = feature.properties.facility_type
-  return type === 'Integrated Cement Plant' || type === 'Grinding Unit'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+function inferFacilityType(properties) {
+  if (properties?.facility_type) return properties.facility_type;
+
+  const nameText = properties?.name || '';
+  const descriptionText = properties?.description || '';
+  const combined = `${nameText} ${descriptionText}`.toLowerCase()
+  if (combined.includes('plant') || combined.includes('grinding')) return 'Integrated Cement Plant'
+  if (combined.includes('mine') || combined.includes('quarry')) return 'Captive Mine'
+  if (combined.includes('customer') || combined.includes('distribution') || combined.includes('retail') || combined.includes('dealer')) return 'Customer'
+  return 'Location'
 }
 
-function isMine(feature) {
-  return feature.properties.facility_type === 'Captive Mine'
-}
+function buildInfoCardData(properties) {
+  const name = String(properties?.name || 'Selected location')
+  const description = String(properties?.description || '')
+  const city = properties?.city
 
-function isCustomer(feature) {
-  const type = feature.properties.facility_type
-  return type === 'Customer Cluster' || type === 'Distribution Hub' ||type === 'Customer'
-}
-
-function getPositions(feature) {
-  const geometry = feature.geometry
-  if (!geometry) return []
-
-  if (geometry.type === 'Point') {
-    const [lon, lat] = geometry.coordinates
-    return [[lat, lon]]
+  return {
+    name,
+    facility_type: inferFacilityType(properties),
+    city,
+    state: properties?.state || 'Not available',
+    description,
   }
+}
 
-  if (geometry.type === 'MultiPoint') {
-    return geometry.coordinates.map(([lon, lat]) => [lat, lon])
-  }
+function markerColorForFeature(properties) {
+  const type = inferFacilityType(properties)
+  if (type === 'Integrated Cement Plant') return '#cf3f3f'
+  if (type === 'Captive Mine') return '#2f5faf'
+  if (type === 'Customer') return '#2f8a4f'
+  return '#636c7a'
+}
 
-  if (geometry.type === 'Polygon') {
-    const ring = geometry.coordinates[0] || []
-    if (ring.length === 0) return []
+function KmlLayerHandler({ kmlPath, selectedType, onFeatureSelect }) {
+  const map = useMap()
+  const layerRef = useRef(null)
 
-    let totalLat = 0
-    let totalLon = 0
-    for (const [lon, lat] of ring) {
-      totalLat += lat
-      totalLon += lon
+  const isFeatureVisibleForType = useCallback((feature) => {
+    if (!selectedType) return false
+
+    const facilityType = inferFacilityType(feature?.properties)
+    if (selectedType === 'plant') return facilityType === 'Integrated Cement Plant'
+    if (selectedType === 'mine') return facilityType === 'Captive Mine'
+    if (selectedType === 'customer') return facilityType === 'Customer'
+    return true
+  }, [selectedType])
+
+  useEffect(() => {
+    if (layerRef.current) {
+      map.removeLayer(layerRef.current)
+      layerRef.current = null
     }
-    return [[totalLat / ring.length, totalLon / ring.length]]
-  }
 
-  return []
+    const markers = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+    })
+
+    const kmlLayer = omnivore.kml(kmlPath, null, L.geoJSON(null, {
+      filter(feature) {
+        return isFeatureVisibleForType(feature)
+      },
+      pointToLayer(feature, latlng) {
+        const color = markerColorForFeature(feature?.properties)
+        return L.circleMarker(latlng, {
+          radius: 7,
+          color,
+          fillColor: color,
+          fillOpacity: 0.82,
+          weight: 2,
+        })
+      },
+      onEachFeature(feature, leafletLayer) {
+        const data = buildInfoCardData(feature?.properties)
+        leafletLayer.on('click', () => onFeatureSelect(data))
+      },
+    }))
+
+    kmlLayer.on('ready', () => {
+      markers.addLayer(kmlLayer)
+      map.addLayer(markers)
+    })
+
+    kmlLayer.on('error', (error) => {
+      console.error('Unable to load KML layer:', error)
+    })
+
+    layerRef.current = markers
+
+    return () => {
+      if (layerRef.current) {
+        map.removeLayer(layerRef.current)
+        layerRef.current = null
+      }
+    }
+  }, [kmlPath, isFeatureVisibleForType, map, onFeatureSelect])
+
+  return null
 }
 
 function MapClickHandler({ onLocationChange }) {
@@ -137,7 +193,7 @@ function MapContextMenuHandler({ onContextMenuOpen, onMapInteraction }) {
 function App() {
   const [location, setLocation] = useState(null)
   const [place, setPlace] = useState('')
-  const [selectedType, setSelectedType] = useState(null)  
+  const [selectedType, setSelectedType] = useState(null)
   const [showMyLocation, setShowMyLocation] = useState(false)
   const [flyTarget, setFlyTarget] = useState(null)
   const [selectedFeature, setSelectedFeature] = useState(null)
@@ -157,6 +213,12 @@ function App() {
   const [startName, setStartName] = useState('')
   const [endName, setEndName] = useState('')
 
+  const kmlPath = useMemo(() => '/ramco_with_global_customers.kml', [])
+
+  const handleFeatureSelect = useCallback((data) => {
+    setSelectedFeature(data)
+  }, [])
+
   async function handleMyLocationClick() {
     if (showMyLocation) {
       setShowMyLocation(false)
@@ -175,7 +237,7 @@ function App() {
         setLocation(coords)
         setPlace(name)
         setShowMyLocation(true)
-        setFlyTarget(coords)  
+        setFlyTarget(coords)
       },
       () => {
         setPlace('Location access denied')
@@ -290,16 +352,16 @@ function App() {
   }, [routeStart, routeEnd])
 
   useEffect(() => {
-  if (routeStart) {
-    getPlaceName(routeStart[0], routeStart[1]).then(setStartName)
-  }
-}, [routeStart])
+    if (routeStart) {
+      getPlaceName(routeStart[0], routeStart[1]).then(setStartName)
+    }
+  }, [routeStart])
 
-useEffect(() => {
-  if (routeEnd) {
-    getPlaceName(routeEnd[0], routeEnd[1]).then(setEndName)
-  }
-}, [routeEnd])
+  useEffect(() => {
+    if (routeEnd) {
+      getPlaceName(routeEnd[0], routeEnd[1]).then(setEndName)
+    }
+  }, [routeEnd])
 
   function handleRouteDragEnd(type, event) {
     const marker = event.target
@@ -318,21 +380,12 @@ useEffect(() => {
     closeContextMenu()
   }
 
-  const visibleLocations = selectedType
-    ? ramcoLocations.features.filter((feature) => {
-        if (selectedType === 'plant') return isPlant(feature)
-        if (selectedType === 'mine') return isMine(feature)
-        if (selectedType === 'customer') return isCustomer(feature)
-        return false
-      })
-    : []
-
   return (
     <div className='main-container'>
-      <Navbar lat={location?.[0]} long={location?.[1]} place={place} onMenuClick={handleSidebarToggle}/>
+      <Navbar lat={location?.[0]} long={location?.[1]} place={place} onMenuClick={handleSidebarToggle} />
 
       <div className='app-content'>
-        <Sidebar activeType={selectedType} onSelectType={handleSelectType} isOpen={isSidebarOpen}/>
+        <Sidebar activeType={selectedType} onSelectType={handleSelectType} isOpen={isSidebarOpen} />
 
         <div className='map-stage'>
           <MapContainer className='map-view' center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} doubleClickZoom={true} >
@@ -363,21 +416,11 @@ useEffect(() => {
               <Polyline positions={routePath} pathOptions={{ color: '#0d6bda', weight: 5, opacity: 0.82 }} />
             )}
 
-            <MarkerClusterGroup>
-            {visibleLocations.flatMap((feature) => {
-              const positions = getPositions(feature)
-              return positions.map((position, index) => (
-                <Marker key={`${feature.properties.entity_id}-${index}`} position={position} eventHandlers={{ click: () => setSelectedFeature(feature.properties) }}/>
-              ))
-            })}
-            </MarkerClusterGroup>
+            <KmlLayerHandler kmlPath={kmlPath} selectedType={selectedType} onFeatureSelect={handleFeatureSelect} />
           </MapContainer>
 
           {contextMenu.isOpen && contextMenu.point && (
-            <div
-              className='route-context-menu'
-              style={{ left: `${contextMenu.point[0]}px`, top: `${contextMenu.point[1]}px` }}
-            >
+            <div className='route-context-menu' style={{ left: `${contextMenu.point[0]}px`, top: `${contextMenu.point[1]}px` }}>
               <button onClick={() => setRoutePoint('start')}>Mark as Start</button>
               <button onClick={() => setRoutePoint('end')}>Mark as End</button>
               <button className='danger' onClick={clearRoute}>Clear Route</button>
@@ -386,21 +429,19 @@ useEffect(() => {
 
           {(routeStart || routeEnd) && (
             <div className='route-status-card'>
-              {/* <strong>Route Planner</strong> */}
-              {/* {routeStart && routeEnd && isRouteLoading && <p>Calculating route...</p>} */}
               {routeStart && routeEnd && routeError && <p className='error'>{routeError}</p>}
               {routeStart && routeEnd && routeStats && (
                 <>
-                <p className='startName'>
-                Start:</p> <p>{startName || `${routeStart[0].toFixed(4)}, ${routeStart[1].toFixed(4)}`} </p>
-                
-                <p className='endName'>
-                End:</p> 
-                <p> {endName || `${routeEnd[0].toFixed(4)}, ${routeEnd[1].toFixed(4)}`}</p>
-                
-                <h6>
-                  Distance: {formatDistance(routeStats.distanceKm)} <br></br> Duration: {formatDuration(routeStats.durationMins)}
-                </h6>
+                  <p className='startName'>
+                    Start:</p> <p>{startName || `${routeStart[0].toFixed(4)}, ${routeStart[1].toFixed(4)}`} </p>
+
+                  <p className='endName'>
+                    End:</p>
+                  <p> {endName || `${routeEnd[0].toFixed(4)}, ${routeEnd[1].toFixed(4)}`}</p>
+
+                  <h6>
+                    Distance: {formatDistance(routeStats.distanceKm)} <br></br> Duration: {formatDuration(routeStats.durationMins)}
+                  </h6>
                 </>
               )}
               {/* <p className='hint'>Drag markers to recalculate.</p> */}
@@ -411,7 +452,7 @@ useEffect(() => {
         </div>
       </div>
 
-      
+
       <Button
         className={`fab ${showMyLocation ? 'active' : ''}`}
         onClick={handleMyLocationClick}

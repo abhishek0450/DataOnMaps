@@ -56,7 +56,7 @@ select {
 	overflow: hidden;
 }
 
-.main-container > .Navbar {
+.main-container>.Navbar {
 	flex: 0 0 var(--nav-height);
 }
 
@@ -173,13 +173,15 @@ select {
 	box-shadow: 0 12px 28px rgba(16, 32, 51, 0.14);
 	backdrop-filter: blur(4px);
 }
-h6{
+
+h6 {
 	font-size: 0.9rem;
 	letter-spacing: 0.01em;
 	margin: 0 0 4px 0;
 }
 
-.endName, .startName{
+.endName,
+.startName {
 	text-transform: uppercase;
 	font-weight: 900;
 	color: rgb(0, 0, 0);
@@ -243,4 +245,12 @@ h6{
 		bottom: 12px;
 		max-width: calc(100% - 24px);
 	}
+}
+
+/* Fix for black focus outline/background on map markers */
+.leaflet-interactive:focus,
+path.leaflet-interactive:focus,
+.leaflet-container :focus {
+	outline: none !important;
+	-webkit-tap-highlight-color: transparent;
 }
