@@ -5,11 +5,9 @@
 
 import './index.css'
 import L from 'leaflet'
-import 'leaflet.markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { MapContainer, Marker, Popup, Polyline, TileLayer, useMapEvents, useMap } from 'react-leaflet'
-import omnivore from '@mapbox/leaflet-omnivore'
 import Navbar from './component/Navbar'
 import Button from './component/Button'
 import Sidebar from './component/Sidebar'
@@ -80,48 +78,74 @@ function KmlLayerHandler({ kmlPath, selectedType, onFeatureSelect }) {
   }, [selectedType])
 
   useEffect(() => {
+    let cancelled = false
+
     if (layerRef.current) {
       map.removeLayer(layerRef.current)
       layerRef.current = null
     }
 
-    const markers = L.markerClusterGroup({
-      chunkedLoading: true,
-      maxClusterRadius: 50,
-    })
+    async function initKmlLayer() {
+      try {
+        // UMD Leaflet plugins expect a global L in production bundles.
+        globalThis.L = L
+        if (typeof window !== 'undefined') window.L = L
 
-    const kmlLayer = omnivore.kml(kmlPath, null, L.geoJSON(null, {
-      filter(feature) {
-        return isFeatureVisibleForType(feature)
-      },
-      pointToLayer(feature, latlng) {
-        const color = markerColorForFeature(feature?.properties)
-        return L.circleMarker(latlng, {
-          radius: 7,
-          color,
-          fillColor: color,
-          fillOpacity: 0.82,
-          weight: 2,
+        const [{ default: omnivoreModule }] = await Promise.all([
+          import('@mapbox/leaflet-omnivore'),
+          import('leaflet.markercluster'),
+        ])
+
+        if (cancelled) return
+
+        const omnivore = omnivoreModule
+        const markers = L.markerClusterGroup({
+          chunkedLoading: true,
+          maxClusterRadius: 50,
         })
-      },
-      onEachFeature(feature, leafletLayer) {
-        const data = buildInfoCardData(feature?.properties)
-        leafletLayer.on('click', () => onFeatureSelect(data))
-      },
-    }))
 
-    kmlLayer.on('ready', () => {
-      markers.addLayer(kmlLayer)
-      map.addLayer(markers)
-    })
+        const kmlLayer = omnivore.kml(kmlPath, null, L.geoJSON(null, {
+          filter(feature) {
+            return isFeatureVisibleForType(feature)
+          },
+          pointToLayer(feature, latlng) {
+            const color = markerColorForFeature(feature?.properties)
+            return L.circleMarker(latlng, {
+              radius: 7,
+              color,
+              fillColor: color,
+              fillOpacity: 0.82,
+              weight: 2,
+            })
+          },
+          onEachFeature(feature, leafletLayer) {
+            const data = buildInfoCardData(feature?.properties)
+            leafletLayer.on('click', () => onFeatureSelect(data))
+          },
+        }))
 
-    kmlLayer.on('error', (error) => {
-      console.error('Unable to load KML layer:', error)
-    })
+        kmlLayer.on('ready', () => {
+          if (cancelled) return
+          markers.addLayer(kmlLayer)
+          map.addLayer(markers)
+        })
 
-    layerRef.current = markers
+        kmlLayer.on('error', (error) => {
+          console.error('Unable to load KML layer:', error)
+        })
+
+        layerRef.current = markers
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Unable to initialize map plugins:', error)
+        }
+      }
+    }
+
+    initKmlLayer()
 
     return () => {
+      cancelled = true
       if (layerRef.current) {
         map.removeLayer(layerRef.current)
         layerRef.current = null
